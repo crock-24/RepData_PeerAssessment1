@@ -5,21 +5,88 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
-
-
-
+```{r, echo = TRUE, message=FALSE}
+library(dplyr)
+library(lubridate)
+#Loading in the proper data
+url <- 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
+download.file(url, 'activity.zip', method = 'curl')
+unzip('activity.zip')
+activity <- read.csv('activity.csv')
+#removing NA's from data
+activityNAomit <- activity[!is.na(activity$steps), ]
+```
 ## What is mean total number of steps taken per day?
+Histogram showing the distribution of steps per day 
+```{r, echo=FALSE}
+#Putting the total number of daily steps in a dataframe
+totalDailySteps <- activityNAomit %>% group_by(date) %>% summarise(total = sum(steps))
+#distribution of steps taken
+hist(totalDailySteps$total, main = 'total daily steps distribution', xlab = 'number of steps')
+```
 
 
-
+5 number summary of steps per day
+```{r, echo=FALSE}
+#summary numbers for the total steps
+summary(totalDailySteps$total)
+```
 ## What is the average daily activity pattern?
+```{r, echo=FALSE}
+#Putting the total number of interval steps in a dataframe
+meanTimeofDaySteps <- activityNAomit %>% group_by(interval) %>% summarise(mean = mean(steps))
+#Putting the mean number of interval steps in a dataframe
+plot(meanTimeofDaySteps$interval, meanTimeofDaySteps$mean, type = 'l', xlab = 'Interval (min)', ylab = 'Steps', main = 'Steps Vs Time', ylim = c(0, 250))
+```
 
+
+Finding the time of day when maximum steps usually occurs
+```{r, echo=FALSE}
+#Finding the 5 minute interval with the maximum average steps
+timeMaxSteps <- meanTimeofDaySteps[meanTimeofDaySteps$mean == max(meanTimeofDaySteps$mean), 'interval']
+```
+**Time with the max steps is at `r timeMaxSteps` minutes **
 
 
 ## Imputing missing values
+How many missing values exist for steps?:
+```{r, echo=FALSE}
+#finding how much data is not available
+na_sum <- sum(is.na(activity$steps))
+total_rows <- nrow(activity)
+percent_missing <- round((na_sum/total_rows)*100, 2)
+```
+**There are `r na_sum` missing values for steps in our data out of `r total_rows` values, this means that `r percent_missing`% of values were missing**
+
+When we impute the average activity level for all missing values instead of just ignoring them, we can see that this centralizes the distribution more
+
+```{r, echo=FALSE}
+#creating new activity df
+imputed_mean <- activity
+#replacing the steps with the average of steps
+imputed_mean$steps[is.na(imputed_mean$steps)] <- mean(imputed_mean$steps, na.rm = TRUE)
+totalDailyStepsimputed <- imputed_mean %>% group_by(date) %>% summarise(total = sum(steps))
+hist(totalDailyStepsimputed$total, main = 'total daily steps distribution imputed', xlab = 'number of steps imputed')
+```
 
 
-
+The new 5 number summary after imputing the steps data
+```{r, echo=FALSE}
+summary(totalDailyStepsimputed$total)
+```
 ## Are there differences in activity patterns between weekdays and weekends?
+The weekends appear to have more activity in the middle of the day than the weekdays
+```{r, echo=FALSE}
+#dates casted as dates
+imputed_mean$date <- ymd(imputed_mean$date)
+imputed_mean$weekday <- wday(imputed_mean$date)
+#finding mean steps at time of day for weekdays and weekends 
+meanTimeofDayStepsWeekday <- imputed_mean[imputed_mean$weekday < 6, ] %>% group_by(interval) %>% summarise(mean = mean(steps))
+meanTimeofDayStepsWeekend <- imputed_mean[imputed_mean$weekday >= 6, ] %>% group_by(interval) %>% summarise(mean = mean(steps))
+#plotting mean steps at time of time of day for weekdays and weekends
+par(mfrow = c(2,1))
+plot(meanTimeofDayStepsWeekday$interval, meanTimeofDayStepsWeekday$mean, type = 'l', xlab = 'Interval (min)', ylab = 'Steps', main = 'Steps Vs Time Weekday', ylim = c(0, 250))
+plot(meanTimeofDayStepsWeekend$interval, meanTimeofDayStepsWeekend$mean, type = 'l', xlab = 'Interval (min)', ylab = 'Steps', main = 'Steps Vs Time Weekend', ylim = c(0, 250))
+```
+
