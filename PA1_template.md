@@ -20,7 +20,8 @@ activityNAomit <- activity[!is.na(activity$steps), ]
 ```
 ## What is mean total number of steps taken per day?
 Histogram showing the distribution of steps per day 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 
 5 number summary of steps per day
@@ -30,7 +31,7 @@ Histogram showing the distribution of steps per day
 ##      41    8841   10765   10766   13294   21194
 ```
 ## What is the average daily activity pattern?
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
 Finding the time of day when maximum steps usually occurs
@@ -45,7 +46,7 @@ How many missing values exist for steps?:
 
 When we impute the average activity level for all missing values instead of just ignoring them, we can see that this centralizes the distribution more
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 
 The new 5 number summary after imputing the steps data
@@ -56,5 +57,5 @@ The new 5 number summary after imputing the steps data
 ```
 ## Are there differences in activity patterns between weekdays and weekends?
 The weekends appear to have more activity in the middle of the day than the weekdays
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 

@@ -19,6 +19,7 @@ activityNAomit <- activity[!is.na(activity$steps), ]
 ```
 ## What is mean total number of steps taken per day?
 Histogram showing the distribution of steps per day 
+
 ```{r, echo=FALSE}
 #Putting the total number of daily steps in a dataframe
 totalDailySteps <- activityNAomit %>% group_by(date) %>% summarise(total = sum(steps))
